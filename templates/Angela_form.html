@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<!--        &lt;!&ndash; Comments Area &ndash;&gt;
+        &lt;!&ndash; TODO: Add a CKEditor for commenting below &ndash;&gt;
+          &lt;!&ndash;CKEditor initialization — REQUIRED for rich text commenting.
+         - {*{ ckeditor.load() }}: Loads the full CKEditor JavaScript library into the page.
+         - {*{ ckeditor.config(name='comment') }}: Configures CKEditor specifically for the field named "comment"
+          (matches the field name in CommentForm: comment = CKEditorField("Comment", ...)).
+        Without these, the comment box would be a plain textarea — no formatting, bold, links, etc.
+        These lines must be in the template where the CKEditor field is used (post.html).&ndash;&gt;-->
+        <!--{*{ ckeditor.load() }}
+        {*{ ckeditor.config(name='comment') }}
+        &lt;!&ndash; Create the wtf quick form from CommentForm &ndash;&gt;
+
+        {*{ render_form(form, novalidate=True, button_map={*"submit": "primary"}) }}
+        <div class="comment">
+          &lt;!&ndash; TODO: Show all the comments on a post &ndash;&gt;
+          <ul class="commentList">
+            {*% for comment in post.comments: %}
+            <li>
+              <div class="commenterImage">
+                <img src="{{ comment.comment_author.email | gravatar }}"
+              </div>
+              <div class="commentText">
+                {{comment.text|safe}}
+                <span class="date sub-text">{{comment.comment_author.name}}</span>
+              </div>
+            </li>
+            {*% endfor %}
+          </ul>
+        </div>-->
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!--Page setup:
+- Include header.html: Loads full <head>, navigation bar, Bootstrap CSS/JS, fonts, etc.
+- Custom CSS: Hides CKEditor's annoying "insecure version" warning banner.
+- Import render_form: Loads Bootstrap-Flask's form helper so {*{ render_form(form) }*} works.
+  This creates a beautiful, styled form with labels, button, and validation.-->
+{% include "header.html" %}
+
+<style>
+  .cke_notification_warning { display: none !important; }
+</style>
+<!--Import Bootstrap-Flask form macro — allows clean form rendering-->
+{% from "bootstrap5/form.html" import render_form %}
+
+
+<!-- Page Header-->
+<header class="masthead" style="background-image: url('{{post.img_url}}')">
+  <div class="container position-relative px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+        <div class="post-heading">
+          <h1>{{ post.title }}</h1>
+          <h2 class="subheading">{{ post.subtitle }}</h2>
+          <span class="meta"
+            >Posted by
+            <a href="#">{{ post.author.name }}</a>
+            on {{ post.date }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Post Content -->
+<article>
+  <div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+      <div class="col-md-10 col-lg-8 col-xl-7">
+      <!-- |safe filter: Tells Jinja NOT to escape HTML.
+      - post.body and comment.text come from CKEditor → contain HTML tags (<b>, <i>, <a>, <p>, etc.)
+      - Without |safe → Jinja escapes them → shows raw code like "<b>bold</b>"
+      - With |safe → renders actual formatted text (bold, links, paragraphs)
+      - SAFE here because:
+        • Only logged-in users can comment
+        • CKEditor sanitizes input
+        • We trust our users-->
+        {{ post.body|safe }}
+
+        <!--**********************************************************************************************************-->
+        <!--TODO: Only show Edit Post button if user id is 1 (admin user) -->
+        {% if current_user.id == 1 %}
+        <div class="d-flex justify-content-end mb-4">
+          <a
+            class="btn btn-primary float-right"
+            href="{{url_for('edit_post', post_id=post.id)}}"
+            >Edit Post</a
+          >
+        </div>
+        {% endif %}
+        <!--**********************************************************************************************************-->
+        <!-- Comments Area -->
+        <!-- TODO: Add a CKEditor for commenting below -->
+        {% if current_user.is_authenticated %}
+          <div class="my-5">
+            <h4>Leave a Comment:</h4>
+            <!--CKEditor initialization — REQUIRED for rich text commenting.
+- {{ ckeditor.load() }}: Loads the full CKEditor JavaScript library into the page.
+- {{ ckeditor.config(name='comment') }}: Configures CKEditor specifically for the field named "comment"
+  (matches the field name in CommentForm: comment = CKEditorField("Comment", ...)).
+Without these, the comment box would be a plain textarea — no formatting, bold, links, etc.
+These lines must be in the template where the CKEditor field is used (post.html).-->
+            {{ ckeditor.load() }}
+            {{ ckeditor.config(name='comment') }}
+            <!-- Where the button and the text fields from the CommentForm on the forms.py are created -->
+            {{ render_form(form) }}
+          </div>
+        {% endif %}
+
+        <!-- Display Comments -->
+        <div class="my-5">
+          <!-- |length filter: Returns number of items in a list.
+            - post.comments is a list of Comment objects (from relationship)
+            - {{ post.comments|length }} → shows "Comments (3)" instead of just "Comments"
+            - Works like len() in Python-->
+          <h4>Comments ({{ post.comments|length }})</h4>
+          {% if post.comments %}
+
+            {% for comment in post.comments %}
+
+              <div class="card mb-3 shadow-sm">
+                <div class="card-body">
+                  <div class="d-flex">
+                    <div class="me-3">
+                      <!--Gravatar image:
+                      - gravatar() function returns a URL string (e.g. "https://www.gravatar.com/avatar/abc123?s=50&d=retro")
+                      - We wrap it in <img src="..."> to display the actual picture
+                      - size=50: 50x50 pixels
+                      - alt: Accessibility text
+                      - class="rounded-circle": Bootstrap class → makes image circular-->
+                      <img src="{{ gravatar(comment.author.email, size=50) }}" alt="Gravatar" class="rounded-circle">
+
+                    </div>
+                    <div>
+                      <strong>{{ comment.author.name }}</strong>
+                      <small class="text-muted">said:</small>
+                      <div class="mt-2">
+                        <!-- |safe filter: Tells Jinja NOT to escape HTML.
+                        - post.body and comment.text come from CKEditor → contain HTML tags (<b>, <i>, <a>, <p>, etc.)
+                        - Without |safe → Jinja escapes them → shows raw code like "<b>bold</b>"
+                        - With |safe → renders actual formatted text (bold, links, paragraphs)
+                        - SAFE here because:
+                          • Only logged-in users can comment
+                          • CKEditor sanitizes input
+                          • We trust our users-->
+                        {{ comment.text|safe }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endfor %}
+          {% else %}
+            <p>No comments yet. Be the first!</p>
+          {% endif %}
+        </div>
+
+
+
+
+
+      </div>
+    </div>
+  </div>
+</article>
+
+{% include "footer.html" %}

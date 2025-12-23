@@ -1,0 +1,41 @@
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+env/
+
+# PyCharm/IDE files
+.idea/
+*.iml
+
+# Databases (SQLite file is typically in instance/)
+instance/
+*.db
+*.sqlite
+*.sqlite3
+
+# Logs and temp files
+*.log
+*.bak
+*.swp
+*.tmp
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Distribution/build files
+build/
+dist/
+*.egg-info/
+
+# Other common ignores
+.pytest_cache/
+.mypy_cache/
+*.cover
