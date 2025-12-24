@@ -1,0 +1,16 @@
+Deployment Instructions for Render.com
+
+1. Procfile content (no comments allowed in this file):
+   web: gunicorn main:app
+
+   Explanation:
+   - "web:" tells Render this is a web service
+   - "gunicorn" is the production server (replaces Flask's development server)
+   - "main:app" means: run the Flask app object named "app" from main.py file
+
+2. Environment variables to set in Render dashboard:
+   - SECRET_KEY: [generate a strong random string]
+   - DATABASE_URL: [PostgreSQL connection string - added in later lesson]
+
+3. Build command: pip install -r requirements.txt
+   Start command: gunicorn main:app
